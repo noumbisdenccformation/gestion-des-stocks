@@ -1,0 +1,26 @@
+<div class="flex flex-wrap gap-3">
+  <button 
+    *ngIf="isImporterVisible"
+    type="button" 
+    class="flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-yellow-500 to-orange-500 text-white rounded-2xl font-semibold hover:from-yellow-600 hover:to-orange-600 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl">
+    <i class="fas fa-cloud-upload-alt"></i>
+    <span>Importer</span>
+  </button>
+  
+  <button 
+    *ngIf="isExporterVisible"
+    type="button" 
+    class="flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-2xl font-semibold hover:from-green-600 hover:to-emerald-600 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl">
+    <i class="fas fa-cloud-download-alt"></i>
+    <span>Exporter</span>
+  </button>
+  
+  <button 
+    *ngIf="isNouveauVisible"
+    type="button" 
+    class="flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-2xl font-semibold hover:from-primary-600 hover:to-primary-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
+    (click)="bouttonNouveauClick()">
+    <i class="fas fa-plus"></i>
+    <span>Nouveau</span>
+  </button>
+</div>

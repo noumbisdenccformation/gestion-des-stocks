@@ -1,0 +1,197 @@
+<div class="min-h-screen bg-gradient-to-br from-light via-neutral-50 to-primary-50 p-4 sm:p-6 lg:p-8">
+  <!-- Animated Background -->
+  <div class="absolute inset-0 overflow-hidden pointer-events-none">
+    <div class="absolute -top-40 -right-40 w-80 h-80 bg-emerald-200/20 rounded-full blur-3xl animate-pulse"></div>
+    <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-teal-300/15 rounded-full blur-3xl animate-bounce"></div>
+    <div class="absolute top-1/2 left-1/4 w-64 h-64 bg-cyan-200/25 rounded-full blur-2xl animate-ping"></div>
+  </div>
+
+  <div class="relative z-10 max-w-7xl mx-auto">
+    <!-- Header Section -->
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 space-y-4 sm:space-y-0">
+      <div>
+        <h1 class="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent mb-2">Utilisateurs</h1>
+        <p class="text-neutral-600">Gestion des comptes et accès utilisateurs</p>
+      </div>
+      <div class="flex items-center space-x-4">
+        <div class="bg-white/80 backdrop-blur-sm rounded-2xl px-4 py-2 shadow-lg border border-white/20">
+          <div class="flex items-center space-x-2">
+            <div class="w-3 h-3 bg-emerald-400 rounded-full animate-pulse"></div>
+            <span class="text-sm text-neutral-600">{{ utilisateurs?.length || 0 }} utilisateurs</span>
+          </div>
+        </div>
+        <app-boutton-action (clickEvent)="nouvelUtilisateur()"></app-boutton-action>
+      </div>
+    </div>
+
+    <!-- Error Message -->
+    <div *ngIf="errorMessage" class="mb-6 p-4 bg-red-50/80 backdrop-blur-sm border border-red-200 rounded-2xl">
+      <div class="flex items-center space-x-3">
+        <div class="w-8 h-8 bg-red-100 rounded-xl flex items-center justify-center">
+          <i class="fas fa-exclamation-triangle text-red-500 text-sm"></i>
+        </div>
+        <p class="text-red-700 font-medium">{{errorMessage}}</p>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="flex items-center justify-center py-20">
+      <div class="bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-white/30">
+        <div class="flex items-center space-x-4">
+          <div class="w-8 h-8 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-full animate-spin">
+            <div class="w-2 h-2 bg-white rounded-full mt-1 ml-1"></div>
+          </div>
+          <span class="text-neutral-700 font-medium">Chargement des utilisateurs...</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search & Filter -->
+    <div *ngIf="!isLoading" class="bg-white/80 backdrop-blur-sm rounded-3xl p-6 shadow-xl border border-white/30 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="relative">
+          <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+            <i class="fas fa-search text-neutral-400"></i>
+          </div>
+          <input 
+            type="text" 
+            class="w-full pl-12 pr-4 py-3 bg-white/60 backdrop-blur-sm border border-neutral-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all duration-300"
+            placeholder="Rechercher un utilisateur..."
+          >
+        </div>
+        <select class="px-4 py-3 bg-white/60 backdrop-blur-sm border border-neutral-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all duration-300">
+          <option>Tous les rôles</option>
+          <option>Administrateur</option>
+          <option>Gestionnaire</option>
+          <option>Utilisateur</option>
+        </select>
+        <select class="px-4 py-3 bg-white/60 backdrop-blur-sm border border-neutral-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all duration-300">
+          <option>Tous les statuts</option>
+          <option>Actifs</option>
+          <option>Inactifs</option>
+        </select>
+        <select class="px-4 py-3 bg-white/60 backdrop-blur-sm border border-neutral-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all duration-300">
+          <option>Trier par nom</option>
+          <option>Date de création</option>
+          <option>Dernière connexion</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Users Grid -->
+    <div *ngIf="!isLoading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div *ngFor="let utilisateur of utilisateurs; let i = index" 
+           class="group relative bg-white/80 backdrop-blur-sm rounded-3xl p-6 shadow-xl border border-white/30 hover:shadow-2xl hover:scale-105 transition-all duration-500 overflow-hidden">
+        
+        <!-- Dynamic Background Gradient -->
+        <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+             [ngClass]="getUserGradient(i)"></div>
+        
+        <div class="relative z-10">
+          <!-- User Header -->
+          <div class="flex items-center space-x-4 mb-6">
+            <div class="relative">
+              <div class="w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg transition-all duration-300 group-hover:scale-110"
+                   [ngClass]="getUserAvatarBg(i)">
+                <span class="text-white font-bold text-lg">{{ utilisateur.nom?.charAt(0) }}{{ utilisateur.prenom?.charAt(0) }}</span>
+              </div>
+              <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-green-400 rounded-full border-2 border-white animate-pulse"></div>
+            </div>
+            <div class="flex-1">
+              <h3 class="font-bold text-neutral-800 text-lg group-hover:text-white transition-colors">{{ utilisateur.nom }} {{ utilisateur.prenom }}</h3>
+              <p class="text-sm text-neutral-500 group-hover:text-white/80 transition-colors">{{ utilisateur.email }}</p>
+              <div class="flex items-center space-x-2 mt-1">
+                <div class="w-2 h-2 bg-green-400 rounded-full"></div>
+                <span class="text-xs text-green-600 group-hover:text-white/90 transition-colors font-medium">En ligne</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Roles -->
+          <div class="mb-6">
+            <h4 class="text-sm font-semibold text-neutral-700 group-hover:text-white/90 transition-colors mb-3">Rôles & Permissions</h4>
+            <div class="flex flex-wrap gap-2">
+              <span *ngFor="let role of utilisateur.roles; let j = index" 
+                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium transition-colors"
+                    [ngClass]="getRoleBadgeStyle(j)">
+                <div class="w-2 h-2 rounded-full mr-2"
+                     [ngClass]="getRoleDotColor(j)"></div>
+                {{ role.roleName }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Stats -->
+          <div class="grid grid-cols-3 gap-3 mb-6">
+            <div class="bg-white/60 backdrop-blur-sm rounded-2xl p-3 text-center group-hover:bg-white/20 transition-colors">
+              <div class="text-lg font-bold text-neutral-800 group-hover:text-white transition-colors">{{ getRandomLoginCount() }}</div>
+              <div class="text-xs text-neutral-600 group-hover:text-white/70 transition-colors">Connexions</div>
+            </div>
+            <div class="bg-white/60 backdrop-blur-sm rounded-2xl p-3 text-center group-hover:bg-white/20 transition-colors">
+              <div class="text-lg font-bold text-neutral-800 group-hover:text-white transition-colors">{{ getRandomActionCount() }}</div>
+              <div class="text-xs text-neutral-600 group-hover:text-white/70 transition-colors">Actions</div>
+            </div>
+            <div class="bg-white/60 backdrop-blur-sm rounded-2xl p-3 text-center group-hover:bg-white/20 transition-colors">
+              <div class="text-lg font-bold text-neutral-800 group-hover:text-white transition-colors">{{ getRandomDaysActive() }}j</div>
+              <div class="text-xs text-neutral-600 group-hover:text-white/70 transition-colors">Actif</div>
+            </div>
+          </div>
+
+          <!-- Last Activity -->
+          <div class="mb-6">
+            <div class="flex items-center space-x-2 text-sm text-neutral-600 group-hover:text-white/80 transition-colors">
+              <i class="fas fa-clock text-xs"></i>
+              <span>Dernière activité: {{ getRandomLastActivity() }}</span>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+              <button class="w-10 h-10 bg-blue-100 hover:bg-blue-200 rounded-xl flex items-center justify-center transition-all duration-200 hover:scale-110 group-hover:bg-white/20" (click)="voirDetails(utilisateur)">
+                <i class="fas fa-eye text-blue-600 group-hover:text-white text-sm"></i>
+              </button>
+              <button class="w-10 h-10 bg-green-100 hover:bg-green-200 rounded-xl flex items-center justify-center transition-all duration-200 hover:scale-110 group-hover:bg-white/20" (click)="modifierUtilisateur(utilisateur.id)">
+                <i class="fas fa-edit text-green-600 group-hover:text-white text-sm"></i>
+              </button>
+              <button class="w-10 h-10 bg-red-100 hover:bg-red-200 rounded-xl flex items-center justify-center transition-all duration-200 hover:scale-110 group-hover:bg-white/20" (click)="supprimerUtilisateur(utilisateur.id)">
+                <i class="fas fa-trash text-red-600 group-hover:text-white text-sm"></i>
+              </button>
+            </div>
+            <button class="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-xl text-sm font-medium hover:from-emerald-600 hover:to-teal-700 transition-all duration-200 hover:scale-105">
+              Message
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!isLoading && utilisateurs.length === 0" class="text-center py-20">
+      <div class="bg-white/80 backdrop-blur-sm rounded-3xl p-12 shadow-xl border border-white/30 max-w-md mx-auto">
+        <div class="w-20 h-20 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-3xl flex items-center justify-center mx-auto mb-6">
+          <i class="fas fa-users text-white text-3xl"></i>
+        </div>
+        <h3 class="text-xl font-bold text-neutral-800 mb-2">Aucun utilisateur trouvé</h3>
+        <p class="text-neutral-600 mb-6">Commencez par créer votre premier utilisateur</p>
+        <button class="px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-2xl font-semibold hover:from-emerald-600 hover:to-teal-700 transition-all duration-300" (click)="nouvelUtilisateur()">
+          Créer un utilisateur
+        </button>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="mt-8 flex justify-center" *ngIf="!isLoading && utilisateurs.length > 0">
+      <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-4 shadow-lg border border-white/20">
+        <app-pagination></app-pagination>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-modal-confirmation 
+  [isVisible]="showDeleteModal"
+  [message]="getDeleteMessage()"
+  (confirm)="confirmerSuppression()"
+  (cancel)="fermerModal()">
+</app-modal-confirmation>

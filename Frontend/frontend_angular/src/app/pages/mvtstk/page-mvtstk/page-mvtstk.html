@@ -1,0 +1,177 @@
+<div class="min-h-screen bg-gradient-to-br from-light via-neutral-50 to-primary-50 p-4 sm:p-6 lg:p-8">
+  <!-- Animated Background -->
+  <div class="absolute inset-0 overflow-hidden pointer-events-none">
+    <div class="absolute -top-40 -right-40 w-80 h-80 bg-primary-200/20 rounded-full blur-3xl animate-pulse"></div>
+    <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-primary-300/15 rounded-full blur-3xl animate-bounce"></div>
+  </div>
+
+  <div class="relative z-10 max-w-7xl mx-auto">
+    <!-- Header Section -->
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 space-y-4 sm:space-y-0">
+      <div>
+        <h1 class="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-primary-600 to-primary-800 bg-clip-text text-transparent mb-2">Mouvements de Stock</h1>
+        <p class="text-neutral-600">Suivi des entrées et sorties d'inventaire</p>
+      </div>
+      <div class="flex items-center space-x-4">
+        <div class="bg-white/80 backdrop-blur-sm rounded-2xl px-4 py-2 shadow-lg border border-white/20">
+          <div class="flex items-center space-x-2">
+            <div class="w-3 h-3 bg-blue-400 rounded-full animate-pulse"></div>
+            <span class="text-sm text-neutral-600">{{ listMouvements?.length || 0 }} mouvements</span>
+          </div>
+        </div>
+        <app-boutton-action
+          [isImporterVisible]="false"
+          [isNouveauVisible]="false">
+        </app-boutton-action>
+      </div>
+    </div>
+
+    <!-- Error Message -->
+    <div *ngIf="errorMsg" class="mb-6 p-4 bg-red-50/80 backdrop-blur-sm border border-red-200 rounded-2xl">
+      <div class="flex items-center space-x-3">
+        <div class="w-8 h-8 bg-red-100 rounded-xl flex items-center justify-center">
+          <i class="fas fa-exclamation-triangle text-red-500 text-sm"></i>
+        </div>
+        <p class="text-red-700 font-medium">{{errorMsg}}</p>
+      </div>
+    </div>
+
+    <!-- Movements Table -->
+    <div class="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/30 overflow-hidden">
+      <!-- Mobile Cards View -->
+      <div class="block lg:hidden p-6 space-y-4">
+        <div *ngFor="let mvt of listMouvements" class="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:shadow-lg transition-all duration-300">
+          <div class="flex items-start justify-between mb-4">
+            <div class="flex items-center space-x-3">
+              <div class="w-12 h-12 rounded-2xl flex items-center justify-center"
+                   [ngClass]="{
+                     'bg-gradient-to-r from-green-500 to-emerald-600': mvt.typeMvt === 'ENTREE',
+                     'bg-gradient-to-r from-red-500 to-orange-600': mvt.typeMvt === 'SORTIE'
+                   }">
+                <i class="text-white text-lg"
+                   [ngClass]="{
+                     'fas fa-arrow-up': mvt.typeMvt === 'ENTREE',
+                     'fas fa-arrow-down': mvt.typeMvt === 'SORTIE'
+                   }"></i>
+              </div>
+              <div>
+                <h3 class="font-semibold text-neutral-800">{{ mvt.article?.designation || 'Article inconnu' }}</h3>
+                <p class="text-sm text-neutral-500">{{ mvt.dateMvt | date:'dd/MM/yyyy HH:mm' }}</p>
+              </div>
+            </div>
+            <div class="text-right">
+              <div class="text-xl font-bold text-neutral-800">{{ mvt.quantite }}</div>
+              <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
+                    [ngClass]="{
+                      'bg-green-100 text-green-800': mvt.typeMvt === 'ENTREE',
+                      'bg-red-100 text-red-800': mvt.typeMvt === 'SORTIE'
+                    }">
+                {{ mvt.typeMvt }}
+              </span>
+            </div>
+          </div>
+          <div class="flex items-center justify-end space-x-2">
+            <button class="w-10 h-10 bg-blue-100 hover:bg-blue-200 rounded-xl flex items-center justify-center transition-colors" (click)="voirDetails(mvt)">
+              <i class="fas fa-eye text-blue-600 text-sm"></i>
+            </button>
+            <button class="w-10 h-10 bg-green-100 hover:bg-green-200 rounded-xl flex items-center justify-center transition-colors" (click)="modifierMouvement(mvt)">
+              <i class="fas fa-edit text-green-600 text-sm"></i>
+            </button>
+            <button class="w-10 h-10 bg-red-100 hover:bg-red-200 rounded-xl flex items-center justify-center transition-colors" (click)="supprimerMouvement(mvt)">
+              <i class="fas fa-trash text-red-600 text-sm"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Desktop Table View -->
+      <div class="hidden lg:block overflow-x-auto">
+        <table class="w-full">
+          <thead class="bg-gradient-to-r from-primary-500/10 to-primary-600/10">
+            <tr>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-neutral-700">Date & Heure</th>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-neutral-700">Article</th>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-neutral-700">Type</th>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-neutral-700">Quantité</th>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-neutral-700">Source/Destination</th>
+              <th class="px-6 py-4 text-center text-sm font-semibold text-neutral-700">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-neutral-100">
+            <tr *ngFor="let mvt of listMouvements" class="hover:bg-primary-50/30 transition-colors duration-200">
+              <td class="px-6 py-4">
+                <div class="flex items-center space-x-3">
+                  <div class="w-10 h-10 rounded-xl flex items-center justify-center"
+                       [ngClass]="{
+                         'bg-gradient-to-r from-green-500 to-emerald-600': mvt.typeMvt === 'ENTREE',
+                         'bg-gradient-to-r from-red-500 to-orange-600': mvt.typeMvt === 'SORTIE'
+                       }">
+                    <i class="text-white text-sm"
+                       [ngClass]="{
+                         'fas fa-arrow-up': mvt.typeMvt === 'ENTREE',
+                         'fas fa-arrow-down': mvt.typeMvt === 'SORTIE'
+                       }"></i>
+                  </div>
+                  <div>
+                    <div class="font-medium text-neutral-800">{{ mvt.dateMvt | date:'dd/MM/yyyy' }}</div>
+                    <div class="text-sm text-neutral-500">{{ mvt.dateMvt | date:'HH:mm' }}</div>
+                  </div>
+                </div>
+              </td>
+              <td class="px-6 py-4">
+                <div class="font-medium text-neutral-800">{{ mvt.article?.designation || 'Article inconnu' }}</div>
+                <div class="text-sm text-neutral-500">Code: {{ mvt.article?.codeArticle || 'N/A' }}</div>
+              </td>
+              <td class="px-6 py-4">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium"
+                      [ngClass]="{
+                        'bg-green-100 text-green-800': mvt.typeMvt === 'ENTREE',
+                        'bg-red-100 text-red-800': mvt.typeMvt === 'SORTIE'
+                      }">
+                  <div class="w-2 h-2 rounded-full mr-2"
+                       [ngClass]="{
+                         'bg-green-400': mvt.typeMvt === 'ENTREE',
+                         'bg-red-400': mvt.typeMvt === 'SORTIE'
+                       }"></div>
+                  {{ mvt.typeMvt }}
+                </span>
+              </td>
+              <td class="px-6 py-4">
+                <div class="text-lg font-bold"
+                     [ngClass]="{
+                       'text-green-600': mvt.typeMvt === 'ENTREE',
+                       'text-red-600': mvt.typeMvt === 'SORTIE'
+                     }">
+                  {{ mvt.typeMvt === 'ENTREE' ? '+' : '-' }}{{ mvt.quantite }}
+                </div>
+              </td>
+              <td class="px-6 py-4">
+                <span class="text-neutral-500">Non spécifié</span>
+              </td>
+              <td class="px-6 py-4">
+                <div class="flex items-center justify-center space-x-2">
+                  <button class="w-10 h-10 bg-blue-100 hover:bg-blue-200 rounded-xl flex items-center justify-center transition-all duration-200 hover:scale-110" (click)="voirDetails(mvt)">
+                    <i class="fas fa-eye text-blue-600 text-sm"></i>
+                  </button>
+                  <button class="w-10 h-10 bg-green-100 hover:bg-green-200 rounded-xl flex items-center justify-center transition-all duration-200 hover:scale-110" (click)="modifierMouvement(mvt)">
+                    <i class="fas fa-edit text-green-600 text-sm"></i>
+                  </button>
+                  <button class="w-10 h-10 bg-red-100 hover:bg-red-200 rounded-xl flex items-center justify-center transition-all duration-200 hover:scale-110" (click)="supprimerMouvement(mvt)">
+                    <i class="fas fa-trash text-red-600 text-sm"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-modal-confirmation 
+  [isVisible]="showDeleteModal"
+  [message]="getDeleteMessage()"
+  (confirm)="confirmerSuppression()"
+  (cancel)="fermerModal()">
+</app-modal-confirmation>

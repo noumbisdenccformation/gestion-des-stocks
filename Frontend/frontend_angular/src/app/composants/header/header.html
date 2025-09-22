@@ -1,0 +1,70 @@
+<header class="relative bg-white/80 backdrop-blur-md border-b border-white/20 shadow-lg">
+  <!-- Animated Background -->
+  <div class="absolute inset-0 bg-gradient-to-r from-primary-500/5 via-transparent to-primary-600/5"></div>
+  
+  <div class="relative z-10 px-8 py-6">
+    <div class="flex items-center justify-between">
+      <!-- Logo & Title -->
+      <div class="flex items-center space-x-4">
+        <div class="w-12 h-12 bg-gradient-to-r from-primary-500 to-primary-600 rounded-2xl flex items-center justify-center shadow-lg">
+          <i class="fas fa-cube text-white text-xl"></i>
+        </div>
+        <div>
+          <h2 class="text-2xl font-bold bg-gradient-to-r from-primary-600 to-primary-800 bg-clip-text text-transparent">StockPro</h2>
+          <p class="text-sm text-neutral-500">Gestion Intelligente</p>
+        </div>
+      </div>
+
+      <!-- Search Bar -->
+      <div class="flex-1 max-w-md mx-8">
+        <div class="relative group">
+          <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+            <i class="fas fa-search text-neutral-400 group-focus-within:text-primary-500 transition-colors"></i>
+          </div>
+          <input 
+            type="text" 
+            class="w-full pl-12 pr-4 py-3 bg-white/60 backdrop-blur-sm border border-white/30 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-all duration-300 placeholder-neutral-400"
+            placeholder="Rechercher produits, clients, commandes..."
+          >
+          <div class="absolute inset-0 rounded-2xl bg-gradient-to-r from-primary-500/10 to-primary-600/10 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+        </div>
+      </div>
+
+      <!-- User Section -->
+      <div class="flex items-center space-x-6">
+        <!-- Notifications -->
+        <div class="relative">
+          <button class="w-12 h-12 bg-white/60 backdrop-blur-sm rounded-2xl flex items-center justify-center hover:bg-white/80 transition-all duration-300 shadow-lg border border-white/30">
+            <i class="fas fa-bell text-neutral-600"></i>
+            <div class="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-r from-red-500 to-red-600 rounded-full flex items-center justify-center">
+              <span class="text-white text-xs font-bold">3</span>
+            </div>
+          </button>
+        </div>
+
+        <!-- Settings -->
+        <div class="relative">
+          <button class="w-12 h-12 bg-white/60 backdrop-blur-sm rounded-2xl flex items-center justify-center hover:bg-white/80 transition-all duration-300 shadow-lg border border-white/30">
+            <i class="fas fa-cog text-neutral-600"></i>
+          </button>
+        </div>
+
+        <!-- User Profile -->
+        <div class="flex items-center space-x-3">
+          <div class="text-right">
+            <div class="text-sm font-semibold text-neutral-800">{{ connectedUser?.prenom || 'Utilisateur' }}</div>
+            <div class="text-xs text-neutral-500">Administrateur</div>
+          </div>
+          <a href="javascript:void(0)" [routerLink]="['/profil']" class="relative group">
+            <div class="w-12 h-12 bg-gradient-to-r from-primary-500 to-primary-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300">
+              <img src="favicon.ico" class="w-8 h-8 rounded-xl" alt="Profile">
+            </div>
+            <div class="absolute inset-0 rounded-2xl bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+

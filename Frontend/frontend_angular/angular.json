@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "frontend_angular": {
+    "gestiondestocks": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -24,8 +24,13 @@
                 "input": "public"
               }
             ],
+            "scripts": [
+              "node_modules/bootstrap/dist/js/bootstrap.js"
+            ],
             "styles": [
-              "src/styles.css"
+              "src/styles.css",
+              "node_modules/bootstrap/dist/css/bootstrap.min.css",
+              "node_modules/@fortawesome/fontawesome-free/css/all.css"
             ]
           },
           "configurations": {
@@ -56,10 +61,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "frontend_angular:build:production"
+              "buildTarget": "gestiondestocks:build:production"
             },
             "development": {
-              "buildTarget": "frontend_angular:build:development"
+              "buildTarget": "gestiondestocks:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -90,6 +95,6 @@
     }
   },
   "cli": {
-    "analytics": false
+    "analytics": "86075743-0435-4cfe-8541-95f810aec6ed"
   }
 }

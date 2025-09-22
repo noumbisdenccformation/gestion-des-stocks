@@ -1,0 +1,270 @@
+<div class="min-h-screen bg-gradient-to-br from-light via-neutral-50 to-primary-50 p-4 sm:p-6 lg:p-8">
+  <!-- Animated Background -->
+  <div class="absolute inset-0 overflow-hidden pointer-events-none">
+    <div class="absolute -top-40 -right-40 w-80 h-80 rounded-full blur-3xl animate-pulse"
+         [ngClass]="origin === 'client' ? 'bg-blue-200/20' : 'bg-orange-200/20'"></div>
+    <div class="absolute -bottom-40 -left-40 w-96 h-96 rounded-full blur-3xl animate-bounce"
+         [ngClass]="origin === 'client' ? 'bg-indigo-300/15' : 'bg-red-300/15'"></div>
+    <div class="absolute top-1/2 left-1/4 w-64 h-64 rounded-full blur-2xl animate-ping"
+         [ngClass]="origin === 'client' ? 'bg-cyan-200/25' : 'bg-yellow-200/25'"></div>
+  </div>
+
+  <div class="relative z-10 max-w-7xl mx-auto">
+    <!-- Header Section -->
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 space-y-4 sm:space-y-0">
+      <div>
+        <h1 class="text-3xl lg:text-4xl font-bold bg-clip-text text-transparent mb-2"
+            [ngClass]="origin === 'client' ? 'bg-gradient-to-r from-blue-600 to-indigo-600' : 'bg-gradient-to-r from-orange-600 to-red-600'">
+          {{ origin === 'client' ? 'Commandes Clients' : 'Commandes Fournisseurs' }}
+        </h1>
+        <p class="text-neutral-600">{{ origin === 'client' ? 'Gestion des commandes de vos clients' : 'Suivi des commandes fournisseurs' }}</p>
+      </div>
+      <div class="flex items-center space-x-4">
+        <div class="bg-white/80 backdrop-blur-sm rounded-2xl px-4 py-2 shadow-lg border border-white/20">
+          <div class="flex items-center space-x-2">
+            <div class="w-3 h-3 rounded-full animate-pulse"
+                 [ngClass]="origin === 'client' ? 'bg-blue-400' : 'bg-orange-400'"></div>
+            <span class="text-sm text-neutral-600">{{ commandes?.length || 0 }} commandes</span>
+          </div>
+        </div>
+        <app-boutton-action (clickEvent)="nouvelleCommande()"></app-boutton-action>
+      </div>
+    </div>
+
+    <!-- Error Message -->
+    <div *ngIf="errorMsg" class="mb-6 p-4 bg-red-50/80 backdrop-blur-sm border border-red-200 rounded-2xl">
+      <div class="flex items-center space-x-3">
+        <div class="w-8 h-8 bg-red-100 rounded-xl flex items-center justify-center">
+          <i class="fas fa-exclamation-triangle text-red-500 text-sm"></i>
+        </div>
+        <p class="text-red-700 font-medium">{{errorMsg}}</p>
+      </div>
+    </div>
+
+    <!-- Stats Summary -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8" *ngIf="commandes.length > 0">
+      <div class="bg-white/80 backdrop-blur-sm rounded-3xl p-6 shadow-xl border border-white/30">
+        <div class="flex items-center space-x-4">
+          <div class="w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg"
+               [ngClass]="origin === 'client' ? 'bg-gradient-to-r from-blue-500 to-indigo-600' : 'bg-gradient-to-r from-orange-500 to-red-600'">
+            <i class="fas fa-shopping-cart text-white text-xl"></i>
+          </div>
+          <div>
+            <div class="text-2xl font-bold text-neutral-800">{{ commandes.length }}</div>
+            <div class="text-sm text-neutral-600">Total commandes</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="bg-white/80 backdrop-blur-sm rounded-3xl p-6 shadow-xl border border-white/30">
+        <div class="flex items-center space-x-4">
+          <div class="w-14 h-14 bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg">
+            <i class="fas fa-euro-sign text-white text-xl"></i>
+          </div>
+          <div>
+            <div class="text-2xl font-bold text-neutral-800">{{ getTotalGeneral() | currency:'EUR':'symbol':'1.0-0' }}</div>
+            <div class="text-sm text-neutral-600">Chiffre d'affaires</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="bg-white/80 backdrop-blur-sm rounded-3xl p-6 shadow-xl border border-white/30">
+        <div class="flex items-center space-x-4">
+          <div class="w-14 h-14 bg-gradient-to-r from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center shadow-lg">
+            <i class="fas fa-check-circle text-white text-xl"></i>
+          </div>
+          <div>
+            <div class="text-2xl font-bold text-neutral-800">{{ getValidatedCount() }}</div>
+            <div class="text-sm text-neutral-600">Validées</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="bg-white/80 backdrop-blur-sm rounded-3xl p-6 shadow-xl border border-white/30">
+        <div class="flex items-center space-x-4">
+          <div class="w-14 h-14 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-2xl flex items-center justify-center shadow-lg">
+            <i class="fas fa-clock text-white text-xl"></i>
+          </div>
+          <div>
+            <div class="text-2xl font-bold text-neutral-800">{{ getPendingCount() }}</div>
+            <div class="text-sm text-neutral-600">En attente</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search & Filter -->
+    <div class="bg-white/80 backdrop-blur-sm rounded-3xl p-6 shadow-xl border border-white/30 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="relative">
+          <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+            <i class="fas fa-search text-neutral-400"></i>
+          </div>
+          <input 
+            type="text" 
+            class="w-full pl-12 pr-4 py-3 bg-white/60 backdrop-blur-sm border border-neutral-200 rounded-2xl focus:outline-none focus:ring-2 focus:border-primary-500 transition-all duration-300"
+            [class]="origin === 'client' ? 'focus:ring-blue-500/50' : 'focus:ring-orange-500/50'"
+            placeholder="Rechercher une commande..."
+          >
+        </div>
+        <select class="px-4 py-3 bg-white/60 backdrop-blur-sm border border-neutral-200 rounded-2xl focus:outline-none focus:ring-2 transition-all duration-300"
+                [class]="origin === 'client' ? 'focus:ring-blue-500/50 focus:border-blue-500' : 'focus:ring-orange-500/50 focus:border-orange-500'">
+          <option>Tous les statuts</option>
+          <option>Validées</option>
+          <option>En attente</option>
+          <option>Annulées</option>
+        </select>
+        <input 
+          type="date" 
+          class="px-4 py-3 bg-white/60 backdrop-blur-sm border border-neutral-200 rounded-2xl focus:outline-none focus:ring-2 transition-all duration-300"
+          [class]="origin === 'client' ? 'focus:ring-blue-500/50 focus:border-blue-500' : 'focus:ring-orange-500/50 focus:border-orange-500'"
+        >
+        <select class="px-4 py-3 bg-white/60 backdrop-blur-sm border border-neutral-200 rounded-2xl focus:outline-none focus:ring-2 transition-all duration-300"
+                [class]="origin === 'client' ? 'focus:ring-blue-500/50 focus:border-blue-500' : 'focus:ring-orange-500/50 focus:border-orange-500'">
+          <option>Trier par date</option>
+          <option>Plus récentes</option>
+          <option>Plus anciennes</option>
+          <option>Montant croissant</option>
+          <option>Montant décroissant</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Orders Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+      <div *ngFor="let commande of commandes; let i = index" 
+           class="group relative bg-white/80 backdrop-blur-sm rounded-3xl p-6 shadow-xl border border-white/30 hover:shadow-2xl hover:scale-105 transition-all duration-500 overflow-hidden">
+        
+        <!-- Dynamic Background Gradient -->
+        <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+             [ngClass]="getOrderGradient(i)"></div>
+        
+        <div class="relative z-10">
+          <!-- Order Header -->
+          <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center space-x-3">
+              <div class="w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg transition-all duration-300 group-hover:scale-110"
+                   [ngClass]="getOrderIconBg(i)">
+                <i class="text-white text-lg"
+                   [ngClass]="origin === 'client' ? 'fas fa-shopping-bag' : 'fas fa-truck'"></i>
+              </div>
+              <div>
+                <h3 class="font-bold text-neutral-800 text-lg group-hover:text-white transition-colors">{{ commande.code }}</h3>
+                <p class="text-sm text-neutral-500 group-hover:text-white/80 transition-colors">{{ commande.dateCommande | date:'dd/MM/yyyy' }}</p>
+              </div>
+            </div>
+            <div class="text-right">
+              <div class="text-xl font-bold group-hover:text-white transition-colors"
+                   [ngClass]="origin === 'client' ? 'text-blue-600' : 'text-orange-600'">{{ getTotalCommande(commande) | currency:'EUR':'symbol':'1.0-0' }}</div>
+              <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
+                    [ngClass]="getStatusBadge(i)">
+                {{ getRandomStatus() }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Client/Supplier Info -->
+          <div class="mb-6">
+            <div class="flex items-center space-x-3 p-3 bg-white/60 backdrop-blur-sm rounded-2xl group-hover:bg-white/20 transition-colors">
+              <div class="w-10 h-10 rounded-xl flex items-center justify-center"
+                   [ngClass]="origin === 'client' ? 'bg-blue-100 group-hover:bg-white/30' : 'bg-orange-100 group-hover:bg-white/30'">
+                <i class="text-sm"
+                   [ngClass]="origin === 'client' ? 'fas fa-user text-blue-600 group-hover:text-white' : 'fas fa-truck text-orange-600 group-hover:text-white'"></i>
+              </div>
+              <div class="flex-1">
+                <div class="font-medium text-neutral-800 group-hover:text-white transition-colors">{{ getClientFournisseurName(commande) }}</div>
+                <div class="text-sm text-neutral-500 group-hover:text-white/70 transition-colors">{{ origin === 'client' ? 'Client' : 'Fournisseur' }}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Order Details -->
+          <div class="grid grid-cols-2 gap-3 mb-6">
+            <div class="bg-white/60 backdrop-blur-sm rounded-2xl p-3 text-center group-hover:bg-white/20 transition-colors">
+              <div class="text-lg font-bold text-neutral-800 group-hover:text-white transition-colors">{{ getNbArticles(commande) }}</div>
+              <div class="text-xs text-neutral-600 group-hover:text-white/70 transition-colors">Articles</div>
+            </div>
+            <div class="bg-white/60 backdrop-blur-sm rounded-2xl p-3 text-center group-hover:bg-white/20 transition-colors">
+              <div class="text-lg font-bold text-neutral-800 group-hover:text-white transition-colors">{{ getRandomDeliveryDays() }}j</div>
+              <div class="text-xs text-neutral-600 group-hover:text-white/70 transition-colors">Livraison</div>
+            </div>
+          </div>
+
+          <!-- Progress Bar -->
+          <div class="mb-6">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-sm text-neutral-600 group-hover:text-white/80 transition-colors">Progression</span>
+              <span class="text-sm font-medium text-neutral-800 group-hover:text-white transition-colors">{{ getRandomProgress() }}%</span>
+            </div>
+            <div class="w-full bg-neutral-200 rounded-full h-2 group-hover:bg-white/30 transition-colors">
+              <div class="h-2 rounded-full transition-all duration-1000 ease-out"
+                   [ngClass]="getProgressBarColor(i)"
+                   [style.width.%]="getRandomProgress()"></div>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+              <button class="w-10 h-10 bg-blue-100 hover:bg-blue-200 rounded-xl flex items-center justify-center transition-all duration-200 hover:scale-110 group-hover:bg-white/20" (click)="voirDetails(commande)">
+                <i class="fas fa-eye text-blue-600 group-hover:text-white text-sm"></i>
+              </button>
+              <button class="w-10 h-10 bg-green-100 hover:bg-green-200 rounded-xl flex items-center justify-center transition-all duration-200 hover:scale-110 group-hover:bg-white/20" (click)="modifierCommande(commande)">
+                <i class="fas fa-edit text-green-600 group-hover:text-white text-sm"></i>
+              </button>
+              <button class="w-10 h-10 bg-red-100 hover:bg-red-200 rounded-xl flex items-center justify-center transition-all duration-200 hover:scale-110 group-hover:bg-white/20" (click)="supprimerCommande(commande)">
+                <i class="fas fa-trash text-red-600 group-hover:text-white text-sm"></i>
+              </button>
+            </div>
+            <div class="text-xs text-neutral-400 group-hover:text-white/60 transition-colors">
+              Créée le {{ commande.dateCommande | date:'dd/MM' }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="commandes.length === 0" class="text-center py-20">
+      <div class="bg-white/80 backdrop-blur-sm rounded-3xl p-12 shadow-xl border border-white/30 max-w-md mx-auto">
+        <div class="w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg"
+             [ngClass]="origin === 'client' ? 'bg-gradient-to-r from-blue-500 to-indigo-600' : 'bg-gradient-to-r from-orange-500 to-red-600'">
+          <i class="text-white text-3xl"
+             [ngClass]="origin === 'client' ? 'fas fa-shopping-cart' : 'fas fa-truck'"></i>
+        </div>
+        <h3 class="text-xl font-bold text-neutral-800 mb-2">Aucune commande trouvée</h3>
+        <p class="text-neutral-600 mb-6">{{ origin === 'client' ? 'Commencez par créer votre première commande client' : 'Commencez par créer votre première commande fournisseur' }}</p>
+        <button class="px-6 py-3 text-white rounded-2xl font-semibold transition-all duration-300"
+                [ngClass]="origin === 'client' ? 'bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700' : 'bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700'"
+                (click)="nouvelleCommande()">
+          Créer une commande
+        </button>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="mt-8 flex justify-center" *ngIf="commandes.length > 0">
+      <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-4 shadow-lg border border-white/20">
+        <app-pagination></app-pagination>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de confirmation de suppression -->
+<div class="modal-overlay" *ngIf="showDeleteModal" (click)="annulerSuppression()" (keydown.escape)="annulerSuppression()">
+  <div class="modal-content" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+    <div class="modal-title">Confirmation</div>
+    <div class="modal-message">
+      Êtes-vous sûr de vouloir supprimer cette commande ?
+    </div>
+    <div class="modal-buttons">
+      <button class="modal-btn modal-btn-cancel" (click)="annulerSuppression()">
+        Annuler
+      </button>
+      <button class="modal-btn modal-btn-confirm" (click)="confirmerSuppression()">
+        OK
+      </button>
+    </div>
+  </div>
+</div>

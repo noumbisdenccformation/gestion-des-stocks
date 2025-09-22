@@ -1,0 +1,104 @@
+<div class="min-h-screen bg-gradient-to-br from-primary-50 via-light to-primary-100 flex items-center justify-center p-4 relative overflow-hidden">
+  <!-- Animated Background Elements -->
+  <div class="absolute inset-0 overflow-hidden pointer-events-none">
+    <div class="absolute -top-40 -right-40 w-80 h-80 bg-primary-300/20 rounded-full blur-3xl animate-pulse"></div>
+    <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-primary-400/15 rounded-full blur-3xl animate-bounce"></div>
+    <div class="absolute top-1/3 left-1/4 w-64 h-64 bg-primary-200/25 rounded-full blur-2xl animate-ping"></div>
+  </div>
+
+  <div class="relative z-10 w-full max-w-md">
+    <!-- Logo Section -->
+    <div class="text-center mb-8">
+      <div class="w-20 h-20 mx-auto mb-4 bg-gradient-to-r from-primary-500 to-primary-600 rounded-3xl flex items-center justify-center shadow-2xl">
+        <i class="fas fa-cube text-3xl text-white"></i>
+      </div>
+      <h1 class="text-4xl font-bold bg-gradient-to-r from-primary-600 to-primary-800 bg-clip-text text-transparent mb-2">StockPro</h1>
+      <p class="text-neutral-600">Connectez-vous à votre espace</p>
+    </div>
+
+    <!-- Login Card -->
+    <div class="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/30 p-8 relative overflow-hidden">
+      <!-- Card Background Effect -->
+      <div class="absolute inset-0 bg-gradient-to-br from-primary-500/5 to-primary-600/5"></div>
+      
+      <div class="relative z-10">
+        <div class="text-center mb-8">
+          <h2 class="text-2xl font-bold text-neutral-800 mb-2">Connexion</h2>
+          <p class="text-neutral-600">Accédez à votre tableau de bord</p>
+        </div>
+
+        <!-- Error Message -->
+        <div *ngIf="errorMessage" class="mb-6 p-4 bg-red-50 border border-red-200 rounded-2xl">
+          <div class="flex items-center space-x-3">
+            <div class="w-8 h-8 bg-red-100 rounded-xl flex items-center justify-center">
+              <i class="fas fa-exclamation-triangle text-red-500 text-sm"></i>
+            </div>
+            <p class="text-red-700 font-medium">{{errorMessage}}</p>
+          </div>
+        </div>
+
+        <!-- Email Input -->
+        <div class="mb-6">
+          <label class="block text-sm font-semibold text-neutral-700 mb-2">Email</label>
+          <div class="relative group">
+            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+              <i class="fas fa-envelope text-neutral-400 group-focus-within:text-primary-500 transition-colors"></i>
+            </div>
+            <input 
+              type="email" 
+              class="w-full pl-12 pr-4 py-4 bg-white/60 backdrop-blur-sm border border-neutral-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-all duration-300 placeholder-neutral-400"
+              placeholder="votre@email.com"
+              [(ngModel)]="authenticationRequest.email"
+            >
+          </div>
+        </div>
+
+        <!-- Password Input -->
+        <div class="mb-8">
+          <label class="block text-sm font-semibold text-neutral-700 mb-2">Mot de passe</label>
+          <div class="relative group">
+            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+              <i class="fas fa-lock text-neutral-400 group-focus-within:text-primary-500 transition-colors"></i>
+            </div>
+            <input 
+              [type]="showPassword ? 'text' : 'password'"
+              class="w-full pl-12 pr-12 py-4 bg-white/60 backdrop-blur-sm border border-neutral-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-all duration-300 placeholder-neutral-400"
+              placeholder="Votre mot de passe"
+              [(ngModel)]="authenticationRequest.password"
+            >
+            <button 
+              type="button" 
+              class="absolute inset-y-0 right-0 pr-4 flex items-center text-neutral-400 hover:text-primary-500 transition-colors"
+              (click)="togglePasswordVisibility()">
+              <i [class]="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="space-y-4">
+          <button 
+            type="button" 
+            class="w-full bg-gradient-to-r from-primary-500 to-primary-600 text-white py-4 rounded-2xl font-semibold hover:from-primary-600 hover:to-primary-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
+            (click)="login()">
+            <div class="flex items-center justify-center space-x-2">
+              <i class="fas fa-sign-in-alt"></i>
+              <span>Se connecter</span>
+            </div>
+          </button>
+
+          <div class="text-center">
+            <span class="text-neutral-600">Pas encore de compte ? </span>
+            <a [routerLink]="['/inscrire']" class="text-primary-600 hover:text-primary-700 font-semibold transition-colors">S'inscrire</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer Info -->
+    <div class="text-center mt-8">
+      <p class="text-neutral-500 text-sm">© 2024 StockPro - Gestion intelligente de stock</p>
+    </div>
+  </div>
+</div>
+

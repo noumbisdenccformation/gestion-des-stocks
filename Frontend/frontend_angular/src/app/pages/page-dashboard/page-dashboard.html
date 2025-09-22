@@ -1,0 +1,24 @@
+<div class="main-contener">
+  <div class="h-screen flex">
+  
+        
+        <div>
+          <app-menu></app-menu>
+        </div>
+     
+    <div class="col-md-10 pl-0 pr-0 background-grey ml-auto">
+      <div class="col pl-0 pr-0  d-flex flex-column justify-content-between">
+        <div class=" p-3  mb-2">
+          <app-header></app-header>
+        </div>
+        <div class="bg-white/80 backdrop-blur-md border-b border-white/20 shadow-lg mb-2 " style="min-height: 480px">
+          <app-loader></app-loader>
+          <div class="content-wrapper">
+            <router-outlet />
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

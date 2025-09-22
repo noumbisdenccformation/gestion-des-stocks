@@ -1,0 +1,149 @@
+<div class="min-h-screen bg-gradient-to-br from-light via-neutral-50 to-primary-50 p-4 sm:p-6 lg:p-8">
+  <!-- Animated Background -->
+  <div class="absolute inset-0 overflow-hidden pointer-events-none">
+    <div class="absolute -top-40 -right-40 w-80 h-80 bg-primary-200/20 rounded-full blur-3xl animate-pulse"></div>
+    <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-primary-300/15 rounded-full blur-3xl animate-bounce"></div>
+  </div>
+
+  <div class="relative z-10 max-w-7xl mx-auto">
+    <!-- Header Section -->
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 space-y-4 sm:space-y-0">
+      <div>
+        <h1 class="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-primary-600 to-primary-800 bg-clip-text text-transparent mb-2">Articles</h1>
+        <p class="text-neutral-600">Gestion de votre inventaire produits</p>
+      </div>
+      <div class="flex items-center space-x-4">
+        <div class="bg-white/80 backdrop-blur-sm rounded-2xl px-4 py-2 shadow-lg border border-white/20">
+          <span class="text-sm text-neutral-600">{{ listArticle?.length || 0 }} articles</span>
+        </div>
+        <app-boutton-action (clickEvent)="nouvelArticle()"></app-boutton-action>
+      </div>
+    </div>
+
+    <!-- Error Message -->
+    <div *ngIf="errorMsg" class="mb-6 p-4 bg-red-50/80 backdrop-blur-sm border border-red-200 rounded-2xl">
+      <div class="flex items-center space-x-3">
+        <div class="w-8 h-8 bg-red-100 rounded-xl flex items-center justify-center">
+          <i class="fas fa-exclamation-triangle text-red-500 text-sm"></i>
+        </div>
+        <p class="text-red-700 font-medium">{{errorMsg}}</p>
+      </div>
+    </div>
+
+    <!-- Search & Filters -->
+    <div class="bg-white/80 backdrop-blur-sm rounded-3xl p-6 shadow-xl border border-white/30 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="relative">
+          <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+            <i class="fas fa-search text-neutral-400"></i>
+          </div>
+          <input 
+            type="text" 
+            class="w-full pl-12 pr-4 py-3 bg-white/60 backdrop-blur-sm border border-neutral-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-all duration-300"
+            placeholder="Rechercher un article..."
+          >
+        </div>
+        <select class="px-4 py-3 bg-white/60 backdrop-blur-sm border border-neutral-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-all duration-300">
+          <option>Toutes les catégories</option>
+        </select>
+        <select class="px-4 py-3 bg-white/60 backdrop-blur-sm border border-neutral-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-all duration-300">
+          <option>Trier par prix</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Articles Grid/Table -->
+    <div class="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/30 overflow-hidden">
+      <!-- Mobile Cards View -->
+      <div class="block lg:hidden p-6 space-y-4">
+        <div *ngFor="let article of listArticle" class="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:shadow-lg transition-all duration-300">
+          <div class="flex items-start justify-between mb-4">
+            <div class="flex-1">
+              <h3 class="font-semibold text-neutral-800 text-lg mb-1">{{ article.designation }}</h3>
+              <p class="text-sm text-neutral-600">Code: {{ article.codeArticle }}</p>
+            </div>
+            <div class="text-right">
+              <div class="text-xl font-bold text-primary-600">{{ article.prixUnitaire | currency:'EUR':'symbol':'1.2-2' }}</div>
+              <div class="text-sm text-neutral-500">{{ article.categorie?.designation || 'N/A' }}</div>
+            </div>
+          </div>
+          <div class="flex items-center justify-end space-x-2">
+            <button class="w-10 h-10 bg-blue-100 hover:bg-blue-200 rounded-xl flex items-center justify-center transition-colors" (click)="voirDetails(article)">
+              <i class="fas fa-eye text-blue-600 text-sm"></i>
+            </button>
+            <button class="w-10 h-10 bg-green-100 hover:bg-green-200 rounded-xl flex items-center justify-center transition-colors" (click)="modifierArticle(article)">
+              <i class="fas fa-edit text-green-600 text-sm"></i>
+            </button>
+            <button class="w-10 h-10 bg-red-100 hover:bg-red-200 rounded-xl flex items-center justify-center transition-colors" (click)="supprimerArticle(article)">
+              <i class="fas fa-trash text-red-600 text-sm"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Desktop Table View -->
+      <div class="hidden lg:block overflow-x-auto">
+        <table class="w-full">
+          <thead class="bg-gradient-to-r from-primary-500/10 to-primary-600/10">
+            <tr>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-neutral-700">Code</th>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-neutral-700">Désignation</th>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-neutral-700">Catégorie</th>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-neutral-700">Prix Unitaire</th>
+              <th class="px-6 py-4 text-center text-sm font-semibold text-neutral-700">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-neutral-100">
+            <tr *ngFor="let article of listArticle" class="hover:bg-primary-50/30 transition-colors duration-200">
+              <td class="px-6 py-4">
+                <div class="flex items-center">
+                  <div class="w-10 h-10 bg-gradient-to-r from-primary-500 to-primary-600 rounded-xl flex items-center justify-center mr-3">
+                    <i class="fas fa-box text-white text-sm"></i>
+                  </div>
+                  <span class="font-medium text-neutral-800">{{ article.codeArticle }}</span>
+                </div>
+              </td>
+              <td class="px-6 py-4">
+                <div class="font-medium text-neutral-800">{{ article.designation }}</div>
+              </td>
+              <td class="px-6 py-4">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary-100 text-primary-800">
+                  {{ article.categorie?.designation || 'N/A' }}
+                </span>
+              </td>
+              <td class="px-6 py-4">
+                <div class="text-lg font-bold text-primary-600">{{ article.prixUnitaire | currency:'EUR':'symbol':'1.2-2' }}</div>
+              </td>
+              <td class="px-6 py-4">
+                <div class="flex items-center justify-center space-x-2">
+                  <button class="w-10 h-10 bg-blue-100 hover:bg-blue-200 rounded-xl flex items-center justify-center transition-all duration-200 hover:scale-110" (click)="voirDetails(article)">
+                    <i class="fas fa-eye text-blue-600 text-sm"></i>
+                  </button>
+                  <button class="w-10 h-10 bg-green-100 hover:bg-green-200 rounded-xl flex items-center justify-center transition-all duration-200 hover:scale-110" (click)="modifierArticle(article)">
+                    <i class="fas fa-edit text-green-600 text-sm"></i>
+                  </button>
+                  <button class="w-10 h-10 bg-red-100 hover:bg-red-200 rounded-xl flex items-center justify-center transition-all duration-200 hover:scale-110" (click)="supprimerArticle(article)">
+                    <i class="fas fa-trash text-red-600 text-sm"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div class="px-6 py-4 border-t border-neutral-100">
+        <app-pagination></app-pagination>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de confirmation -->
+<app-modal-confirmation 
+  [isVisible]="showDeleteModal"
+  [message]="getDeleteMessage()"
+  (confirmed)="confirmerSuppression()"
+  (cancelled)="annulerSuppression()">
+</app-modal-confirmation>
